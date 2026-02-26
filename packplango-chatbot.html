@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jacky's Australien-Assistentin | Pack Plan Go</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand:     #FFF8EE;
+    --deep:     #0F1923;
+    --coral:    #FF5C3A;
+    --coral-lt: #FF8A70;
+    --teal:     #00C4A3;
+    --teal-lt:  #B2F0E8;
+    --sky:      #A8DCFF;
+    --sun:      #FFD166;
+    --white:    #FFFFFF;
+    --muted:    #8A95A0;
+    --surface:  #F4F8FB;
+    --shadow:   0 6px 32px rgba(0,0,0,0.10);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--sand);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image:
+      radial-gradient(ellipse at 10% 90%, rgba(0,196,163,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 10%, rgba(255,92,58,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(255,209,102,0.06) 0%, transparent 70%);
+  }
+
+  /* ── OUTER SHELL ── */
+  .widget {
+    width: 420px;
+    max-width: 100%;
+    height: 700px;
+    max-height: 96vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow), 0 0 0 1.5px rgba(0,196,163,0.18);
+    position: relative;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--deep);
+    padding: 0 0 16px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .header-wave {
+    width: 100%; height: 6px;
+    background: linear-gradient(90deg, var(--coral), var(--sun), var(--teal), var(--sky), var(--coral));
+    background-size: 200%;
+    animation: waveShift 4s linear infinite;
+  }
+  @keyframes waveShift { to { background-position: 200% 0; } }
+  .header-inner { padding: 14px 20px 0; }
+  .header-glow {
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,196,163,0.14) 0%, transparent 70%);
+    top: -80px; right: -60px;
+    pointer-events: none;
+  }
+
+  .h-top { display:flex; align-items:center; gap:12px; position:relative; z-index:1; }
+  .h-avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--coral), var(--sun));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(255,92,58,0.35);
+  }
+  .h-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    letter-spacing: -0.4px;
+    line-height: 1.1;
+  }
+  .h-sub { font-size: 11.5px; color: var(--teal); font-weight: 500; margin-top: 2px; }
+  .online-bar {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 9px;
+    position: relative; z-index: 1;
+  }
+  .pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 2px rgba(0,196,163,0.3);
+    animation: onlinePulse 2.4s infinite;
+  }
+  @keyframes onlinePulse {
+    0%,100% { box-shadow: 0 0 0 2px rgba(0,196,163,0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(0,196,163,0.08); }
+  }
+  .online-bar span { font-size: 11px; color: rgba(255,255,255,0.55); }
+
+  /* ── CHIPS BAR ── */
+  .chips {
+    display: flex;
+    gap: 7px;
+    padding: 10px 14px;
+    background: var(--teal-lt);
+    border-bottom: 1px solid rgba(0,196,163,0.18);
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-shrink: 0;
+  }
+  .chips::-webkit-scrollbar { display:none; }
+  .chip {
+    flex-shrink: 0;
+    padding: 6px 13px;
+    border-radius: 20px;
+    border: 1.5px solid var(--teal);
+    background: transparent;
+    color: #00695C;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .chip:hover { background: var(--teal); color: white; }
+
+  /* ── MESSAGES ── */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scroll-behavior: smooth;
+  }
+  .messages::-webkit-scrollbar { width: 3px; }
+  .messages::-webkit-scrollbar-thumb { background: rgba(0,196,163,0.25); border-radius: 2px; }
+
+  .row { display:flex; gap:9px; animation: pop 0.28s cubic-bezier(0.34,1.56,0.64,1); }
+  .row.user { flex-direction: row-reverse; }
+  @keyframes pop { from { opacity:0; transform: scale(0.88) translateY(6px); } to { opacity:1; transform: scale(1) translateY(0); } }
+
+  .av {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--coral), var(--sun));
+    display:flex; align-items:center; justify-content:center;
+    font-size: 14px;
+    flex-shrink: 0;
+    align-self: flex-end;
+    box-shadow: 0 2px 8px rgba(255,92,58,0.25);
+  }
+  .row.user .av {
+    background: var(--deep);
+    font-size: 11px; color: white;
+    font-weight: 700; font-family: 'Syne', sans-serif;
+    box-shadow: none;
+  }
+
+  .bbl {
+    max-width: 80%;
+    padding: 11px 15px;
+    border-radius: 18px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--deep);
+  }
+  .row.bot .bbl {
+    background: var(--surface);
+    border-radius: 4px 18px 18px 18px;
+    border: 1px solid rgba(0,196,163,0.13);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .row.user .bbl {
+    background: var(--deep);
+    color: white;
+    border-radius: 18px 4px 18px 18px;
+  }
+
+  /* emoji highlight */
+  .bbl strong { color: var(--coral); }
+
+  /* choices */
+  .opts { display:flex; flex-direction:column; gap:7px; margin-top:10px; }
+  .opt {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--teal);
+    background: rgba(0,196,163,0.06);
+    color: #00695C;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.18s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .opt:hover { background: var(--teal); color: white; transform: translateX(4px); }
+
+  /* typing */
+  .typing { display:flex; align-items:center; gap:5px; padding:12px 16px;
+    background: var(--surface); border-radius:4px 18px 18px 18px;
+    border:1px solid rgba(0,196,163,0.13); width:fit-content; }
+  .td { width:7px; height:7px; border-radius:50%; background:var(--teal); animation:tdBounce 1.1s infinite; }
+  .td:nth-child(2){animation-delay:.13s}
+  .td:nth-child(3){animation-delay:.26s}
+  @keyframes tdBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+  /* badges */
+  .badges { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  .bdg {
+    display:flex; align-items:center; gap:5px;
+    font-size: 11px; color: #00695C;
+    background: var(--teal-lt);
+    padding: 4px 10px; border-radius:20px; font-weight:600;
+  }
+
+  /* ── LEAD CARD ── */
+  .lead-card {
+    background: white;
+    border: 1.5px solid rgba(0,196,163,0.25);
+    border-radius: 4px 18px 18px 18px;
+    padding: 18px;
+    max-width: 88%;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    animation: pop 0.3s ease;
+  }
+  .lead-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 800;
+    color: var(--deep); margin-bottom: 14px;
+  }
+  .lf-group { margin-bottom: 10px; }
+  .lf-group label {
+    display:block; font-size:10.5px; font-weight:700;
+    color: var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:4px;
+  }
+  .lf-group input, .lf-group select {
+    width:100%; padding:9px 12px;
+    border:1.5px solid rgba(0,196,163,0.25); border-radius:10px;
+    font-size:13px; font-family:'Inter',sans-serif;
+    color:var(--deep); background:var(--surface); outline:none;
+    transition:border-color .2s;
+  }
+  .lf-group input:focus, .lf-group select:focus { border-color:var(--teal); }
+  .lf-submit {
+    width:100%; padding:12px;
+    background: linear-gradient(135deg, var(--coral), var(--coral-lt));
+    color:white; border:none; border-radius:12px;
+    font-size:13px; font-weight:700; cursor:pointer;
+    font-family:'Syne',sans-serif; letter-spacing:.3px;
+    transition:all .2s; margin-top:4px;
+    box-shadow: 0 4px 14px rgba(255,92,58,0.35);
+  }
+  .lf-submit:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,92,58,0.4); }
+
+  /* guide promo card */
+  .guide-card {
+    background: linear-gradient(135deg, var(--deep), #1A2E40);
+    border-radius: 4px 18px 18px 18px;
+    padding: 18px;
+    max-width: 88%;
+    color: white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    animation: pop 0.3s ease;
+  }
+  .guide-card .gc-emoji { font-size:28px; margin-bottom:8px; }
+  .guide-card h3 {
+    font-family:'Syne',sans-serif; font-size:14px; font-weight:800;
+    margin-bottom:6px; line-height:1.3;
+  }
+  .guide-card p { font-size:12px; opacity:.75; line-height:1.6; margin-bottom:14px; }
+  .gc-btns { display:flex; flex-direction:column; gap:8px; }
+  .gc-btn-free {
+    padding:10px 14px; border-radius:10px;
+    border:1.5px solid var(--teal); background:transparent;
+    color:var(--teal); font-size:12px; font-weight:600;
+    cursor:pointer; font-family:'Inter',sans-serif; transition:all .18s;
+  }
+  .gc-btn-free:hover { background:var(--teal); color:white; }
+  .gc-btn-buy {
+    padding:10px 14px; border-radius:10px;
+    background: linear-gradient(135deg, var(--coral), var(--sun));
+    border:none; color:white; font-size:12px; font-weight:700;
+    cursor:pointer; font-family:'Syne',sans-serif;
+    box-shadow:0 3px 10px rgba(255,92,58,0.35); transition:all .18s;
+  }
+  .gc-btn-buy:hover { transform:translateY(-1px); }
+
+  /* ── INPUT ── */
+  .input-area {
+    padding: 12px 14px;
+    border-top: 1px solid rgba(0,196,163,0.12);
+    background: white;
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .input-wrap {
+    flex:1; display:flex; align-items:center;
+    background: var(--surface);
+    border: 1.5px solid rgba(0,196,163,0.18);
+    border-radius: 14px; padding: 10px 14px; gap:8px;
+    transition: border-color .2s;
+  }
+  .input-wrap:focus-within { border-color: var(--teal); }
+  .input-wrap input {
+    flex:1; border:none; background:transparent;
+    outline:none; font-size:13.5px;
+    font-family:'Inter',sans-serif; color:var(--deep);
+  }
+  .input-wrap input::placeholder { color: var(--muted); }
+  .send {
+    width:42px; height:42px; border-radius:12px;
+    background: linear-gradient(135deg, var(--coral), var(--coral-lt));
+    border:none; color:white; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px; flex-shrink:0;
+    box-shadow:0 3px 10px rgba(255,92,58,0.3);
+    transition:all .2s;
+  }
+  .send:hover { transform:scale(1.08); }
+  .send:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding:7px 14px 9px; background:white;
+    border-top: 1px solid rgba(0,196,163,0.08);
+    text-align:center; flex-shrink:0;
+  }
+  .footer span { font-size:10.5px; color:var(--muted); }
+  .footer strong { color:var(--coral); }
+
+  /* ── MOBILE ── */
+  @media(max-width:460px){
+    body { padding:0; align-items:flex-end; }
+    .widget { border-radius:20px 20px 0 0; height:93vh; width:100%; }
+  }
+</style>
+</head>
+<body>
+<div class="widget">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-wave"></div>
+    <div class="header-glow"></div>
+    <div class="header-inner">
+      <div class="h-top">
+        <div class="h-avatar">🦘</div>
+        <div>
+          <div class="h-name">Jacky's Australien-Assistentin</div>
+          <div class="h-sub">Pack Plan Go · Work &amp; Travel Expertin</div>
+        </div>
+      </div>
+      <div class="online-bar"><div class="pulse"></div><span>Jetzt online – antwortet sofort</span></div>
+    </div>
+  </div>
+
+  <!-- CHIPS -->
+  <div class="chips">
+    <button class="chip" onclick="qs('🛂 Visum Australien')">🛂 Visum</button>
+    <button class="chip" onclick="qs('📦 Gratis Guide holen')">📦 Gratis Guide</button>
+    <button class="chip" onclick="qs('💰 Budget & Kosten')">💰 Budget</button>
+    <button class="chip" onclick="qs('🎒 Was packen?')">🎒 Packliste</button>
+    <button class="chip" onclick="qs('💼 Jobs finden')">💼 Jobs</button>
+    <button class="chip" onclick="qs('🏡 Unterkunft Tipps')">🏡 Unterkunft</button>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="messages" id="messages">
+    <div class="row bot">
+      <div class="av">🦘</div>
+      <div>
+        <div class="bbl">
+          Hey du! 👋 Ich bin Jackys digitale Assistentin.<br><br>
+          Jacky hat's 2024 von Hamburg nach Australien gezogen – mit einem Koffer voller WTF-Momente und <strong>jetzt weiß sie alles</strong>, was du brauchst. 🌏<br><br>
+          Womit kann ich dir helfen?
+        </div>
+        <div class="badges">
+          <span class="bdg">🌟 Realtalk-Tipps</span>
+          <span class="bdg">✅ Kein Hochglanz-BS</span>
+          <span class="bdg">🇦🇺 Vor-Ort-Erfahrung</span>
+        </div>
+        <div class="opts" id="start-opts" style="margin-top:10px;">
+          <button class="opt" onclick="pick('📦 Wo bekomme ich den Gratis Guide?')">📦 Wo bekomme ich den Gratis Guide?</button>
+          <button class="opt" onclick="pick('🛂 Wie bekomme ich das Working Holiday Visum?')">🛂 Wie bekomme ich das Visum?</button>
+          <button class="opt" onclick="pick('💰 Wie viel Geld brauche ich für Australien?')">💰 Wie viel Geld brauche ich?</button>
+          <button class="opt" onclick="pick('🎒 Was gehört auf meine Packliste?')">🎒 Was muss ich einpacken?</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+    <div class="input-wrap">
+      <input id="inp" type="text" placeholder="Frag Jacky alles über Australien…" onkeydown="if(event.key==='Enter')go()">
+    </div>
+    <button class="send" id="sendBtn" onclick="go()">➤</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Powered by <strong>Pack Plan Go</strong> · hello@packplango.com</span>
+  </div>
+</div>
+
+<script>
+const SYSTEM = `Du bist die digitale Assistentin von "Pack Plan Go" – dem Australien Work & Travel Blog von Jacky West (packplango.de).
+
+ÜBER JACKY & PACK PLAN GO:
+- Jacky ist 2024 von Hamburg nach Australien ausgewandert
+- Ihr Stil: ehrlich, witzig, "Realtalk" – kein Hochglanz-Bullshit
+- Sie hat einen KOSTENLOSEN Mini-Guide (Freebie) und einen kompletten bezahlten Guide
+- Etsy Shop: etsy.com/shop/packplango (5 Sterne Bewertung)
+- Kontakt: hello@packplango.com
+- Website: packplango.de
+
+DEINE AUFGABE:
+Beantworte alle Fragen zu Work & Travel Australien. Sei wie Jacky: jung, locker, motivierend, direkt. Nutze gelegentlich Emojis. Schreib auf Deutsch. Max. 4-5 Sätze pro Antwort.
+
+WICHTIGE INFOS ZU AUSTRALIEN (nutze diese):
+VISUM:
+- Working Holiday Visa (Subclass 417) für Deutsche, Alter 18-30
+- Kostet ca. 635 AUD (ca. 385€), online beantragen auf immi.homeaffairs.gov.au
+- Erlaubt 12 Monate arbeiten + reisen
+- Verlängerung auf Jahr 2 möglich (88 Tage Farm/Specified Work)
+- Jahr 3 möglich (179 Tage)
+
+BUDGET:
+- Startbudget empfohlen: 5.000-8.000€ (Visum + Flug + erste Wochen)
+- Mindestnachweis für Einreise: ca. 5.000 AUD
+- Hostel: 25-45 AUD/Nacht
+- Essen selbst kochen: 80-120 AUD/Woche
+- Mindestlohn Australien: ca. 24 AUD/Stunde (eine der höchsten weltweit!)
+
+JOBS:
+- Farmwork (Ernte, Obst): gut für Visa-Verlängerung, oft Kost & Logis inklusive
+- Hospitality (Bar, Restaurant): RSA Zertifikat nötig (Jacky hat ihres mit Palmenblick gemacht 🌴)
+- Au Pair, Housekeeping, Baugewerbe
+- Job-Portale: Seek.com.au, Gumtree, Indeed.com.au
+- TFN (Tax File Number) sofort nach Ankunft beantragen (ato.gov.au)
+
+PACKLISTE HIGHLIGHTS:
+- Rucksack 50-60L (kein Koffer!)
+- Regenhülle für Rucksack
+- Sonnencreme LSF50+ (UV in Australien extrem!)
+- Mückenschutz mit DEET (Tropen)
+- Arbeitsstiefel (für Farmjobs)
+- Internationaler Führerschein (ca. 15€ im Bürgeramt)
+- Kreditkarte ohne Auslandsgebühren (z.B. Wise, Revolut)
+
+ANKUNFT TIPPS:
+- Gute Startcities: Sydney, Melbourne, Brisbane (Brisbane günstigster Start)
+- Woche 1: TFN beantragen, Bankkonto eröffnen (CommBank, ANZ)
+- WhatsApp-Gruppen für Backpacker nutzen
+- Jackys Tipp: Erstmal ankommen, dann planen!
+
+JACKYS GUIDES:
+- Gratis Freebie Guide: auf packplango.de oder per E-Mail-Liste – enthält Checklisten, erste Schritte, Visahacks
+- Kompletter Guide: packplango.de/verkauf – ausführlich, mit Links, Realtalk-Seiten, persönliche Stories
+- Etsy: etsy.com/listing/4319796218 – 5 Sterne Bewertung
+
+LEAD-GENERIERUNG:
+- Wenn jemand den Gratis Guide möchte: sage "Ich helfe dir gleich dabei – hinterlass kurz deine E-Mail!" → Das Formular erscheint automatisch
+- Wenn jemand unsicher ist / viele Fragen hat: empfehle den kompletten Guide
+
+TONFALL: 
+- Locker, wie eine gute Freundin die schon in Australien war
+- Ermutigend, motivierend
+- Manchmal ein kurzer witziger Kommentar (wie Jacky es machen würde)
+- Vermeide steife, formelle Sprache
+- Nutze "du" nicht "Sie"`;
+
+let hist = [];
+let formShown = false;
+
+async function callAI(msg) {
+  hist.push({ role:"user", content: msg });
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:1000,
+        system:SYSTEM,
+        messages:hist
+      })
+    });
+    const d = await r.json();
+    const reply = d.content?.[0]?.text || "Ups, da hat was nicht geklappt! Schreib Jacky direkt: hello@packplango.com 🙃";
+    hist.push({ role:"assistant", content: reply });
+    return reply;
+  } catch {
+    return "Kurze Pause – bin gleich wieder da! 🦘 Oder schreib an hello@packplango.com";
+  }
+}
+
+function addMsg(text, role) {
+  const c = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = `row ${role}`;
+
+  const isBot = role === 'bot';
+  const av = isBot ? '🦘' : 'Du';
+
+  // check if should trigger form
+  const triggerForm = isBot && !formShown && (
+    text.toLowerCase().includes('e-mail') ||
+    text.toLowerCase().includes('email') ||
+    text.toLowerCase().includes('formular') ||
+    text.toLowerCase().includes('hinterlass')
+  );
+
+  // check if should show guide promo
+  const triggerGuide = isBot && (
+    text.toLowerCase().includes('guide') && (
+      text.toLowerCase().includes('komplett') ||
+      text.toLowerCase().includes('verkauf') ||
+      text.toLowerCase().includes('etsy') ||
+      text.toLowerCase().includes('kaufen')
+    )
+  );
+
+  row.innerHTML = `
+    <div class="av">${av}</div>
+    <div>
+      <div class="bbl">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+      ${triggerForm ? freebiFormHTML() : ''}
+      ${(!triggerForm && triggerGuide) ? guideCardHTML() : ''}
+    </div>`;
+
+  c.appendChild(row);
+  c.scrollTop = c.scrollHeight;
+
+  if(triggerForm) {
+    formShown = true;
+    document.getElementById('freebiForm').addEventListener('submit', submitFreebie);
+  }
+}
+
+function freebiFormHTML() {
+  return `
+    <div class="lead-card" style="margin-top:10px;">
+      <h3>📦 Gratis Guide anfordern</h3>
+      <form id="freebiForm">
+        <div class="lf-group">
+          <label>Dein Vorname</label>
+          <input type="text" placeholder="z.B. Lisa" required>
+        </div>
+        <div class="lf-group">
+          <label>E-Mail Adresse</label>
+          <input type="email" placeholder="deine@email.de" required>
+        </div>
+        <div class="lf-group">
+          <label>Wann planst du zu reisen?</label>
+          <select>
+            <option>In den nächsten 3 Monaten</option>
+            <option>In 3–6 Monaten</option>
+            <option>In 6–12 Monaten</option>
+            <option>Noch unentschieden</option>
+          </select>
+        </div>
+        <button type="submit" class="lf-submit">🚀 Jetzt kostenlos holen!</button>
+      </form>
+    </div>`;
+}
+
+function guideCardHTML() {
+  return `
+    <div class="guide-card" style="margin-top:10px;">
+      <div class="gc-emoji">🗺️</div>
+      <h3>Jackys kompletter Australien Guide</h3>
+      <p>Alles drin: Visum, Jobs, Budget, Packliste, Realtalk aus echten Erfahrungen – mit klickbaren Links.</p>
+      <div class="gc-btns">
+        <button class="gc-btn-free" onclick="qs('📦 Gratis Guide holen')">📦 Erst den Gratis Guide testen</button>
+        <button class="gc-btn-buy" onclick="window.open('https://www.packplango.de/verkauf','_blank')">✨ Kompletten Guide kaufen →</button>
+      </div>
+    </div>`;
+}
+
+function submitFreebie(e) {
+  e.preventDefault();
+  const f = e.target;
+  f.innerHTML = `
+    <div style="text-align:center;padding:18px 0;">
+      <div style="font-size:36px;margin-bottom:10px;">🎉</div>
+      <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0F1923;margin-bottom:6px;">Yes! Du bist dabei!</div>
+      <div style="font-size:12px;color:#8A95A0;line-height:1.6;">Jacky schickt dir gleich deinen Gratis Guide per Mail.<br>Check auch deinen Spam-Ordner! 📬</div>
+    </div>`;
+  setTimeout(() => {
+    addMsg("Super, deine Anfrage ist raus! 🥳 Schau gleich in dein E-Mail-Postfach (auch Spam!). Und falls du richtig tief eintauchen willst: Der komplette Guide wartet auf dich unter **packplango.de/verkauf** 🚀", 'bot');
+  }, 900);
+}
+
+function showTyping() {
+  const c = document.getElementById('messages');
+  const r = document.createElement('div');
+  r.className = 'row bot'; r.id = 'typing';
+  r.innerHTML = `<div class="av">🦘</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  c.appendChild(r); c.scrollTop = c.scrollHeight;
+}
+function hideTyping() { document.getElementById('typing')?.remove(); }
+
+async function go() {
+  const inp = document.getElementById('inp');
+  const btn = document.getElementById('sendBtn');
+  const txt = inp.value.trim(); if(!txt) return;
+  document.getElementById('start-opts')?.remove();
+  inp.value = ''; btn.disabled = true;
+  addMsg(txt,'user'); showTyping();
+  const rep = await callAI(txt);
+  hideTyping(); addMsg(rep,'bot');
+  btn.disabled = false; inp.focus();
+}
+
+function qs(t) { document.getElementById('inp').value = t; go(); }
+function pick(t) { document.getElementById('start-opts')?.remove(); document.getElementById('inp').value = t; go(); }
+</script>
+</body>
+</html>
