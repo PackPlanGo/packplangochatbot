@@ -50,7 +50,7 @@ app.post("/api/claude", async (req, res) => {
 
     const userMessage = req.body.message || "Hallo";
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const body = {
       system_instruction: {
