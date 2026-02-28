@@ -1,10 +1,8 @@
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log("Key geladen:", process.env.GEMINI_API_KEY ? "JA" : "NEIN");
 
 const app = express();
 app.use(cors());
@@ -16,114 +14,79 @@ const SYSTEM = `Du bist die digitale Assistentin von "Pack Plan Go" – dem Aust
 - Jacky ist 2024 von Hamburg nach Australien ausgewandert
 - Ihr Stil: ehrlich, witzig, "Realtalk" – kein Hochglanz-Bullshit
 - Sie hat einen KOSTENLOSEN Mini-Guide (Freebie) und einen kompletten bezahlten Guide
-- Etsy Shop: etsy.com/shop/packplango (5 Sterne Bewertung)
 - Kontakt: hello@packplango.com
 - Website: packplango.de
 
 DEINE AUFGABE:
 Beantworte alle Fragen zu Work & Travel Australien. Sei wie Jacky: jung, locker, motivierend, direkt. Nutze gelegentlich Emojis. Schreib auf Deutsch. Max. 4-5 Sätze pro Antwort.
 
-WICHTIGE INFOS ZU AUSTRALIEN:
-
 VISUM:
 - Working Holiday Visa (Subclass 417) für Deutsche, Alter 18-30
-- Kostet ca. 635 AUD (ca. 385€), online beantragen auf immi.homeaffairs.gov.au
+- Kostet ca. 635 AUD, online beantragen auf immi.homeaffairs.gov.au
 - Erlaubt 12 Monate arbeiten + reisen
-- Verlängerung auf Jahr 2 möglich (88 Tage Farm/Specified Work)
-- Jahr 3 möglich (179 Tage)
+- Verlängerung auf Jahr 2 möglich (88 Tage Farmwork)
 
 BUDGET:
-- Startbudget empfohlen: 5.000-8.000€ (Visum + Flug + erste Wochen)
-- Mindestnachweis für Einreise: ca. 5.000 AUD
+- Startbudget empfohlen: 5.000-8.000€
 - Hostel: 25-45 AUD/Nacht
-- Essen selbst kochen: 80-120 AUD/Woche
-- Mindestlohn Australien: ca. 24 AUD/Stunde (eine der höchsten weltweit!)
+- Mindestlohn: ca. 24 AUD/Stunde
 
 JOBS:
-- Farmwork (Ernte, Obst): gut für Visa-Verlängerung, oft Kost & Logis inklusive
-- Hospitality (Bar, Restaurant): RSA Zertifikat nötig (Jacky hat ihres mit Palmenblick gemacht 🌴)
-- Au Pair, Housekeeping, Baugewerbe
+- Farmwork, Hospitality (RSA Zertifikat), Au Pair
 - Job-Portale: Seek.com.au, Gumtree, Indeed.com.au
-- TFN (Tax File Number) sofort nach Ankunft beantragen (ato.gov.au)
+- TFN sofort nach Ankunft beantragen (ato.gov.au)
 
-PACKLISTE HIGHLIGHTS:
-- Rucksack 50-60L (oder Koffer)
-- Regenhülle für Rucksack
-- Sonnencreme LSF50+ (UV in Australien extrem!)
-- Mückenschutz mit DEET (Tropen)
-- Internationaler Führerschein (ca. 15€ im Bürgeramt)
-- Kreditkarte ohne Auslandsgebühren (z.B. Wise, Revolut)
+GUIDES:
+- Gratis Guide: packplango.de
+- Kompletter Guide: packplango.de/verkauf
+- Wenn jemand den Gratis Guide möchte: sage "hinterlass kurz deine E-Mail!"
 
-ANKUNFT TIPPS:
-- Gute Startcities: Sydney, Melbourne, Brisbane (Brisbane günstigster Start)
-- Woche 1: TFN beantragen, Bankkonto eröffnen (CommBank, ANZ)
-- WhatsApp-Gruppen für Backpacker nutzen
-- Jackys Tipp: Erstmal ankommen, dann planen!
-
-JACKYS GUIDES:
-- Gratis Freebie Guide: auf packplango.de – enthält Checklisten, erste Schritte, Visahacks
-- Kompletter Guide: packplango.de/verkauf – ausführlich, mit Links, Realtalk-Seiten, persönliche Stories
-- Etsy: etsy.com/listing/4319796218 – 5 Sterne Bewertung
-
-LEAD-GENERIERUNG:
-- Wenn jemand den Gratis Guide möchte: sage "Ich helfe dir gleich dabei – hinterlass kurz deine E-Mail!"
-- Wenn jemand unsicher ist oder viele Fragen hat: empfehle den kompletten Guide
-
-TONFALL:
-- Locker, wie eine gute Freundin die schon in Australien war
-- Ermutigend, motivierend
-- Manchmal ein kurzer witziger Kommentar (wie Jacky es machen würde)
-- Vermeide steife, formelle Sprache
-- Nutze "du" nicht "Sie"`;
+TONFALL: Locker, motivierend, wie eine gute Freundin. Nutze "du" nicht "Sie".`;
 
 app.post("/api/claude", async (req, res) => {
   try {
-    const userMessage = req.body.message;
-    const history = req.body.messages || [];
+    const apiKey = process.env.GEMINI_API_KEY;
+    console.log("API Key vorhanden:", apiKey ? "JA" : "NEIN");
 
-    // Gesprächsverlauf für Gemini aufbauen
-    const contents = [];
-    for (const msg of history) {
-      if (msg.role === "user") {
-        contents.push({ role: "user", parts: [{ text: msg.content }] });
-      } else if (msg.role === "assistant") {
-        contents.push({ role: "model", parts: [{ text: msg.content }] });
+    const userMessage = req.body.message || "Hallo";
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const body = {
+      system_instruction: {
+        parts: [{ text: SYSTEM }]
+      },
+      contents: [
+        { role: "user", parts: [{ text: userMessage }] }
+      ],
+      generationConfig: {
+        maxOutputTokens: 500,
+        temperature: 0.8
       }
-    }
+    };
 
-    // Aktuelle Nachricht hinzufügen
-    if (!contents.length || contents[contents.length - 1].role !== "user") {
-      contents.push({ role: "user", parts: [{ text: userMessage }] });
-    }
-
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM }] },
-          contents: contents,
-          generationConfig: { maxOutputTokens: 1000, temperature: 0.8 }
-        })
-      }
-    );
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
 
     const data = await response.json();
+    console.log("Gemini Status:", response.status);
 
     if (data.error) {
-      console.error("Gemini Fehler:", data.error);
+      console.error("Gemini Fehler:", data.error.message);
       return res.status(500).json({ error: data.error.message });
     }
 
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Ups, da hat was nicht geklappt! Schreib Jacky direkt: hello@packplango.com 🙃";
+      "Ups! Schreib Jacky direkt: hello@packplango.com";
 
     res.json({ reply });
 
   } catch (err) {
-    console.error("Server Fehler:", err);
-    res.status(500).json({ error: "Server Fehler" });
+    console.error("Server Fehler:", err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
