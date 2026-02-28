@@ -46,11 +46,10 @@ JOBS:
 - TFN (Tax File Number) sofort nach Ankunft beantragen (ato.gov.au)
 
 PACKLISTE HIGHLIGHTS:
-- Rucksack 50-60L (oder Koffer!)
+- Rucksack 50-60L (oder Koffer)
 - Regenhülle für Rucksack
 - Sonnencreme LSF50+ (UV in Australien extrem!)
 - Mückenschutz mit DEET (Tropen)
-- Laptop
 - Internationaler Führerschein (ca. 15€ im Bürgeramt)
 - Kreditkarte ohne Auslandsgebühren (z.B. Wise, Revolut)
 
@@ -66,7 +65,7 @@ JACKYS GUIDES:
 - Etsy: etsy.com/listing/4319796218 – 5 Sterne Bewertung
 
 LEAD-GENERIERUNG:
-- Wenn jemand den Gratis Guide möchte: sage "Ich helfe dir gleich dabei – hinterlass kurz deine E-Mail!" 
+- Wenn jemand den Gratis Guide möchte: sage "Ich helfe dir gleich dabei – hinterlass kurz deine E-Mail!"
 - Wenn jemand unsicher ist oder viele Fragen hat: empfehle den kompletten Guide
 
 TONFALL:
@@ -78,32 +77,48 @@ TONFALL:
 
 app.post("/api/claude", async (req, res) => {
   try {
-    // Unterstützt Gesprächsverlauf (history) vom Frontend
-    const messages = req.body.messages || [{ role: "user", content: req.body.message }];
+    const userMessage = req.body.message;
+    const history = req.body.messages || [];
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: SYSTEM,
-        messages: messages
-      })
-    });
+    // Gesprächsverlauf für Gemini aufbauen
+    const contents = [];
+    for (const msg of history) {
+      if (msg.role === "user") {
+        contents.push({ role: "user", parts: [{ text: msg.content }] });
+      } else if (msg.role === "assistant") {
+        contents.push({ role: "model", parts: [{ text: msg.content }] });
+      }
+    }
+
+    // Aktuelle Nachricht hinzufügen
+    if (!contents.length || contents[contents.length - 1].role !== "user") {
+      contents.push({ role: "user", parts: [{ text: userMessage }] });
+    }
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM }] },
+          contents: contents,
+          generationConfig: { maxOutputTokens: 1000, temperature: 0.8 }
+        })
+      }
+    );
 
     const data = await response.json();
 
     if (data.error) {
-      console.error("Anthropic Fehler:", data.error);
+      console.error("Gemini Fehler:", data.error);
       return res.status(500).json({ error: data.error.message });
     }
 
-    res.json({ reply: data.content[0].text });
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "Ups, da hat was nicht geklappt! Schreib Jacky direkt: hello@packplango.com 🙃";
+
+    res.json({ reply });
 
   } catch (err) {
     console.error("Server Fehler:", err);
@@ -111,7 +126,6 @@ app.post("/api/claude", async (req, res) => {
   }
 });
 
-// Health check
 app.get("/", (req, res) => {
   res.json({ status: "Pack Plan Go Chatbot läuft! 🦘" });
 });
