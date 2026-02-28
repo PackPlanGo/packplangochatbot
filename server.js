@@ -116,7 +116,7 @@ app.get("/", (req, res) => {
   res.json({ status: "Pack Plan Go Chatbot läuft! 🦘" });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
 });
