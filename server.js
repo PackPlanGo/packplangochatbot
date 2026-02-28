@@ -4,6 +4,7 @@ import fetch from "node-fetch";
 import dotenv from "dotenv";
 
 dotenv.config();
+console.log("Key geladen:", process.env.GEMINI_API_KEY ? "JA" : "NEIN");
 
 const app = express();
 app.use(cors());
