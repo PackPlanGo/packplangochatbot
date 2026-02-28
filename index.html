@@ -499,7 +499,7 @@ let formShown = false;
 async function callAI(msg) {
   hist.push({ role:"user", content: msg });
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
+    const r = await fetch("https://packplangochatbot-production.up.railway.app", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
         "x-api-key": "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",
@@ -507,10 +507,8 @@ async function callAI(msg) {
   "anthropic-dangerous-direct-browser-access": "true"
 },
       body: JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:1000,
-        system:SYSTEM,
-        messages:hist
+  message: msg
+})
       })
     });
     const d = await r.json();
